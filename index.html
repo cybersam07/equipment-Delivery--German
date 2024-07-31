@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lieferverfolgung</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: rgba(255, 255, 255, 0.3); /* Transparenz nach Bedarf anpassen */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.717);
+        }
+
+        header {
+            background-color: #007Bff;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        #tracking-input {
+            padding: 0.5rem;
+            font-size: 16px;
+            width: 60%;
+            margin-bottom: 1rem;
+        }
+
+        #track-button {
+            padding: 0.5rem 1rem;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #track-button:hover {
+            background-color: #0056b3;
+        }
+
+        #tracking-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #007BFF;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        #tracking-modal-content {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 5px;
+            text-align: left;
+            display: none;
+            position: relative;
+        }
+
+        #close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #dc3545; /* Rote Hintergrundfarbe */
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #tracking-result {
+            font-size: 18px;
+        }
+
+        p {
+            margin: 0.5rem 0;
+        }
+
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .catchphrase {
+            color: rgb(255, 255, 255);
+            font-style: italic;
+            font-size: 42px;
+            font-weight: bolder;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeIn 2s ease-in-out forwards;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Lieferverfolgungssystem</h1>
+    </header>
+    <section>
+        <div class="catchphrase">Bringt Ihre Pakete näher, eine Lieferung nach der anderen.</div>
+        <label for="tracking-input">Geben Sie die Sendungsverfolgungsnummer ein:</label>
+        <input type="text" id="tracking-input" placeholder="Geben Sie die Sendungsverfolgungsnummer ein...">
+        <button id="track-button" onclick="openModal()">Verfolgen</button>
+
+        <!-- Lade-Spinner -->
+        <div id="tracking-modal">
+            <div id="loading-spinner"></div>
+            <div id="tracking-modal-content">
+                <button id="close-button" onclick="closeModal()">X</button>
+                <div id="tracking-result"></div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function openModal() {
+            const trackingInput = document.getElementById('tracking-input').value;
+            const trackingResult = document.getElementById('tracking-result');
+            const trackingModal = document.getElementById('tracking-modal');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const modalContent = document.getElementById('tracking-modal-content');
+            const catchphrase = document.querySelector('.catchphrase');
+
+            // Lade-Spinner anzeigen
+            loadingSpinner.style.display = 'block';
+
+            // Modal anzeigen
+            trackingModal.style.display = 'flex';
+
+            // Überprüfen, ob die eingegebene Sendungsverfolgungsnummer der erwarteten Nummer entspricht
+            setTimeout(() => {
+                if (trackingInput === '782532602BQ') {
+                    // Sendungsverfolgungsergebnis simulieren
+                    const status = 'Paket zurückgegeben';
+                    const location = 'Verteilzentrum';
+                    const expectedDate = 'nicht definiert';
+
+                    trackingResult.innerHTML = `
+                        <p>Status: ${status}</p>
+                        <p>Standort: ${location}</p>
+                        <p>Voraussichtliches Lieferdatum: ${expectedDate}</p>
+                    `;
+                    trackingResult.classList.remove('error');
+                } else {
+                    trackingResult.innerHTML = '<p class="error">Ungültige Sendungsverfolgungsnummer. Bitte versuchen Sie es erneut.</p>';
+                    trackingResult.classList.add('error');
+                }
+
+                // Lade-Spinner ausblenden und Sendungsverfolgungsergebnis anzeigen
+                loadingSpinner.style.display = 'none';
+                modalContent.style.display = 'block';
+            }, 3000);
+
+            // Catchphrase mit Fade-In-Animation anzeigen
+            catchphrase.style.animation = 'none';
+            void catchphrase.offsetWidth; // Reflow auslösen
+            catchphrase.style.animation = null;
+        }
+
+        function closeModal() {
+            const trackingModal = document.getElementById('tracking-modal');
+            const modalContent = document.getElementById('tracking-modal-content');
+
+            // Modal ausblenden und Inhalt zurücksetzen
+            trackingModal.style.display = 'none';
+            modalContent.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
